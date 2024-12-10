@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Processing</title>
+</head>
+<body>
+    <h1>Upload Your Image</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="file">Select a TIFF Image:</label>
+        <input type="file" name="file" id="file" accept=".tiff,.tif" required>
+        <button type="submit">Upload and Process</button>
+    </form>
+</body>
+</html>
