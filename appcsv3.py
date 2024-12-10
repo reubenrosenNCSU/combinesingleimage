@@ -188,7 +188,7 @@ model = models.load_model(model_path, backbone_name='resnet50')
 # see: https://github.com/fizyr/keras-retinanet#converting-a-training-model-to-inference-model
 model = models.convert_model(model)
 # Initialize count for relevant classes only (1 to 6).
-count = np.zeros((1, 6), dtype=int)  # Only track counts for classes 1 to 6
+count = np.zeros((1, 6), dtype=int)
 
 
 # In[5]:
@@ -199,12 +199,12 @@ for i, testpath in enumerate(testpaths):
 
     fullimg_c1 = read_image_bgr(testpath)
     fullimg = np.zeros(fullimg_c1.shape, dtype=np.uint16)
-    fullimg[:, :, 2] = fullimg_c1[:, :, 1].copy()  # BGR
+    fullimg[:, :, 2] = fullimg_c1[:, :, 2].copy()  # BGR
     fullimg[:, :, 1] = fullimg_c1[:, :, 1]
 
     if (fullimg[:, :, 2].sum() > 0) & (fullimg[:, :, 1].sum() > 0):
         fulldraw = fullimg.copy() / 257  # RGB to save
-        fulldraw = (fulldraw * 8).clip(0, 255)  # Increase brightness
+        fulldraw = (fulldraw * 3).clip(0, 255)  # Increase brightness
 
         # Padding
         H0, W0, _ = fullimg.shape
