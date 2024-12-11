@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload and Processing</title>
+    <style>
+        /* Optional: Customize the styles */
+        .container {
+            width: 80%;
+            margin: 0 auto;
+        }
+        .image-container {
+            margin-top: 20px;
+            max-width: 100%;
+            text-align: center;
+            overflow: hidden; /* Prevents image from overflowing outside the container */
+            position: relative; /* Required for absolute positioning of image */
+        }
+        #image {
+            width: 100%;
+            transition: all 0.2s ease-in-out; /* Smooth transition for brightness and contrast */
+            transform-origin: center center; /* Keeps the zoom centered */
+        }
+        .controls {
+            margin-top: 10px;
+        }
+        .controls label {
+            margin-right: 10px;
+        }
+    </style>
+
+    <!-- Include Viewer.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/viewerjs@1.11.0/dist/viewer.min.css" />
+    <!-- Include Viewer.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/viewerjs@1.11.0/dist/viewer.min.js"></script>
+</head>
+<body>
+    <h1>Upload Your Image</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="file">Select a TIFF Image:</label>
+        <input type="file" name="file" id="file" accept=".tiff,.tif" required>
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    {% if download_ready %}
+        <h2>Processing complete! Your ZIP file is ready for download.</h2>
+        <a href="{{ url_for('download_file', filename=zip_filename) }}">
+            <button>Download ZIP</button>
+        </a>
+    {% endif %}
+
+    {% if download_ready %}
+    <div class="container">
+        <h2>Image Viewer</h2>
+        <div class="image-container">
+            <img id="image" src="{{ url_for('static', filename='imageviewer/detections.png') }}" alt="Processed Image">
+        </div>
+
+        <div class="controls">
+            <label for="zoom">Zoom: </label>
+            <input type="range" id="zoom" min="1" max="3" step="0.1" value="1">
+            
+            <label for="brightness">Brightness: </label>
+            <input type="range" id="brightness" min="0" max="2" step="0.1" value="1">
+            
+            <label for="contrast">Contrast: </label>
+            <input type="range" id="contrast" min="0" max="2" step="0.1" value="1">
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        window.onload = function() {
+            const image = document.getElementById('image');
+
+            // Initialize Viewer.js on the image element
+            const viewer = new Viewer(image, {
+                inline: false,   // Open viewer in a separate modal
+                viewed() {
+                    // You can configure further interactions here (e.g. events after the viewer is opened)
+                }
+            });
+
+            // Zoom functionality (adjust image size) handled by Viewer.js, but you can still adjust the range:
+            const zoomSlider = document.getElementById('zoom');
+            zoomSlider.addEventListener('input', function() {
+                const zoomValue = zoomSlider.value;
+                image.style.transform = `scale(${zoomValue})`;
+            });
+
+            // Brightness and contrast functionality
+            const brightnessSlider = document.getElementById('brightness');
+            const contrastSlider = document.getElementById('contrast');
+
+            function updateImageFilters() {
+                const brightness = brightnessSlider.value;
+                const contrast = contrastSlider.value;
+                image.style.filter = `brightness(${brightness}) contrast(${contrast})`;
+            }
+
+            // Event listeners for brightness and contrast sliders
+            brightnessSlider.addEventListener('input', updateImageFilters);
+            contrastSlider.addEventListener('input', updateImageFilters);
+        };
+    </script>
+</body>
+</html>
